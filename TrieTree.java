@@ -5,22 +5,27 @@ import java.util.Scanner;
 
 public class TrieTree {
     static class Trie{
-        Trie []child=new Trie[26];
+        Trie []child=new Trie[52];
         boolean isEnd;
         int frequency;
         Trie(){
             isEnd=false;
-            for(int i=0 ;i<26 ;i++)
+            for(int i=0 ;i<52 ;i++)
                 child[i]=null;
         }
     }
     ArrayList<String> choose=new ArrayList<>();
     Trie root=new Trie();
     public void insert(String s){
-        int index;
+        int index=0;
         Trie p=root;
         for(int i=0 ;i<s.length() ;i++){
-            index=s.charAt(i) -'a';
+            if(s.charAt(i)<'a')
+                index=s.charAt(i) -'A' + 26;
+
+            else if(s.charAt(i)>='a')
+                index=s.charAt(i) -'a';
+
             if(p.child[index]==null)
                 p.child[index]=new Trie();
             p=p.child[index];
@@ -34,9 +39,12 @@ public class TrieTree {
                 System.out.print(s[i]);
             System.out.println();
         }
-            for (int i = 0; i < 26; i++) {
+            for (int i = 0; i < 52; i++) {
                 if (root.child[i] != null) {
-                    s[index] = (char) (i + 'a');
+                    if(i<26)
+                        s[index] = (char) (i + 'a');
+                    else
+                        s[index] = (char) (i + 'A');
                     printAllWords(root.child[i], s, index + 1);
                 }
             }
@@ -51,25 +59,39 @@ public class TrieTree {
                 choose.add(h);
                 System.out.println();
             }
-            for (int i = 0; i < 26; i++) {
+            for (int i = 0; i < 52; i++) {
                 if(choose.size()==3)
                     break;
                 else if (index == 0) {
-                    if (root.child[c - 'a'] != null) {
-                        s[index] = c;
-                        print3Words(root.child[c - 'a'], s, index + 1, c);
+                    if(c<'a') {
+                        if (root.child[c - 'A' + 26] != null) {
+                            s[index] = c;
+                            print3Words(root.child[c - 'A' + 26], s, index + 1, c);
+                        }
+                    }
+                    else  {
+                        if (root.child[c - 'a'] != null) {
+                            s[index] = c;
+                            print3Words(root.child[c - 'a'], s, index + 1, c);
+                        }
                     }
                 } else {
                     if (r.child[i] != null) {
-                        s[index] = (char) (i + 'a');
-                        print3Words(r.child[i], s, index + 1, c);
+                        if(i<26) {
+                            s[index] = (char) (i + 'a');
+                            print3Words(r.child[i], s, index + 1, c);
+                        }
+                        else {
+                            s[index] = (char) (i + 'A');
+                            print3Words(r.child[i], s, index + 1, c);
+                        }
                     }
                 }
             }
             return;
     }
     public String autoComplete(char ch){
-        char [] chars=new char[50];
+        char [] chars=new char[1000];
         print3Words(root,chars,0,ch);
         int select=new Scanner(System.in).nextInt();
         String y=choose.get(select-1);
@@ -77,33 +99,19 @@ public class TrieTree {
         return y;
     }
     public void readFromFile() throws FileNotFoundException {
-        File f=new File("C:\\Users\\Admin\\Desktop\\Trie.txt");
+        File f=new File("C:\\Users\\Admin\\Desktop\\words.txt");
         Scanner sc=new Scanner(f);
-        while(sc.hasNextLine()){
+        while(sc.hasNextLine()) {
             insert(sc.nextLine());
         }
     }
     public static void main(String[] args) throws FileNotFoundException {
         TrieTree t=new TrieTree();
-        char []c=new char[20];
-      //  t.readFromFile();
+        char []c=new char[100];
         ArrayList<Integer> d=new ArrayList<>();
-        d.add(3);
-        System.out.println(d.size());
-        System.out.println(d.get(0));
-
-
-        //  t.readFromFile();
-
-        /*
-        char []s =new char[40];
-        char []s1=new char[50];
-        t.printAllWords(t.root,s,0);
-        System.out.println("-----");
-        t.print3Words(t.root,s1,0,'a');
-        System.out.println("-----");
-
-         */
+        t.readFromFile();
+    //    t.printAllWords(t.root,c,0);
+        t.print3Words(t.root,c,0,'a');
 
     }
 }
